@@ -7,51 +7,65 @@
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            text-align: center;
-            background: linear-gradient(to right, #ffecd2, #fcb69f);
-            color: #333;
+            margin: 0;
+            padding: 0;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
+            background: linear-gradient(to right, #ffecd2, #fcb69f);
+            text-align: center;
         }
 
         h1 {
-            font-size: 3em;
+            font-size: 2em;
             margin-bottom: 20px;
         }
 
         .countdown {
             display: flex;
-            gap: 20px;
-            font-size: 2em;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
         }
 
         .time-box {
-            background: rgba(255, 255, 255, 0.8);
-            padding: 20px;
+            background: rgba(255, 255, 255, 0.85);
+            padding: 15px 20px;
             border-radius: 10px;
-            min-width: 100px;
+            min-width: 70px;
         }
 
         .number {
             font-weight: bold;
-            font-size: 2.5em;
+            font-size: 2em;
         }
 
         .label {
-            font-size: 0.6em;
+            font-size: 0.7em;
             margin-top: 5px;
             display: block;
+        }
+
+        @media (max-width: 500px) {
+            .number {
+                font-size: 1.5em;
+            }
+            .time-box {
+                padding: 10px 15px;
+                min-width: 60px;
+            }
+            h1 {
+                font-size: 1.5em;
+            }
         }
     </style>
 </head>
 <body>
     <h1>العد التنازلي لعيد الميلاد المجيد 🎄</h1>
-  <br>
-    <h1>Christmas countdown🎄</h1>
+    <br>
+    <h1>Christmas_countdown🎄</h1>
     <div class="countdown">
         <div class="time-box">
             <span class="number" id="days">0</span>
@@ -62,6 +76,45 @@
             <span class="label">ساعات</span>
         </div>
         <div class="time-box">
+            <span class="number" id="minutes">0</span>
+            <span class="label">دقائق</span>
+        </div>
+        <div class="time-box">
+            <span class="number" id="seconds">0</span>
+            <span class="label">ثواني</span>
+        </div>
+    </div>
+
+    <script>
+        // تاريخ عيد الميلاد المجيد القادم
+        const christmasDate = new Date("January 7, 2026 00:00:00").getTime();
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = christmasDate - now;
+
+            if (distance <= 0) {
+                document.querySelector(".countdown").innerHTML = "<h2>عيد ميلاد مجيد! 🎉</h2>";
+                clearInterval(interval);
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("days").innerText = days;
+            document.getElementById("hours").innerText = hours;
+            document.getElementById("minutes").innerText = minutes;
+            document.getElementById("seconds").innerText = seconds;
+        }
+
+        const interval = setInterval(updateCountdown, 1000);
+        updateCountdown();
+    </script>
+</body>
+</html>
             <span class="number" id="minutes">0</span>
             <span class="label">دقائق</span>
         </div>
