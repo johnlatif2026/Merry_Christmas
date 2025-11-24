@@ -64,6 +64,8 @@
 </head>
 <body>
     <h1>العد التنازلي لعيد الميلاد المجيد 🎄</h1>
+    <br>
+    <h1>Christmas_countdown🎄</h1>
     <div class="countdown">
         <div class="time-box">
             <span class="number" id="days">0</span>
@@ -92,45 +94,6 @@
             const distance = christmasDate - now;
 
             if (distance <= 0) {
-                document.querySelector(".countdown").innerHTML = "<h2>عيد ميلاد مجيد! 🎉</h2>";
-                clearInterval(interval);
-                return;
-            }
-
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            document.getElementById("days").innerText = days;
-            document.getElementById("hours").innerText = hours;
-            document.getElementById("minutes").innerText = minutes;
-            document.getElementById("seconds").innerText = seconds;
-        }
-
-        const interval = setInterval(updateCountdown, 1000);
-        updateCountdown();
-    </script>
-</body>
-</html>
-            <span class="number" id="minutes">0</span>
-            <span class="label">دقائق</span>
-        </div>
-        <div class="time-box">
-            <span class="number" id="seconds">0</span>
-            <span class="label">ثواني</span>
-        </div>
-    </div>
-
-    <script>
-        // تحديد موعد عيد الميلاد المجيد القادم
-        const christmasDate = new Date("December 25, 2025 00:00:00").getTime();
-
-        function updateCountdown() {
-            const now = new Date().getTime();
-            const distance = christmasDate - now;
-
-            if (distance < 0) {
                 document.querySelector(".countdown").innerHTML = "<h2>عيد ميلاد مجيد! 🎉</h2>";
                 clearInterval(interval);
                 return;
