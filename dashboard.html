@@ -3,51 +3,67 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Dashboard - التحويلات</title>
+  <title>Dashboard - Merry Christmas</title>
   <style>
-    body { font-family: Arial, sans-serif; padding:20px; direction: rtl; background:#f3f4f6; color:#111827; }
-    h1 { margin-bottom:10px; }
-    table { width:100%; border-collapse: collapse; background:#fff; border-radius:8px; overflow:hidden; }
-    th, td { padding:12px; border-bottom:1px solid #e5e7eb; text-align:right; }
-    th { background:#111827; color:#fff; text-align:right; }
-    .controls { margin-bottom:12px; }
-    .pw { padding:8px; border-radius:6px; border:1px solid #d1d5db; width:260px; }
-    .btn { padding:8px 12px; border-radius:6px; border:none; cursor:pointer; background:#2563eb; color:#fff; }
+    body{font-family:Arial, "Noto Sans Arabic", sans-serif;padding:20px;background:#f7f9ff}
+    .wrap{max-width:900px;margin:0 auto}
+    table{width:100%;border-collapse:collapse;background:#fff;border-radius:8px;overflow:hidden}
+    th,td{padding:10px;border-bottom:1px solid #eee;text-align:right}
+    th{background:#f0f6ff}
+    input{padding:8px;border-radius:6px;border:1px solid #ddd}
+    .btn{padding:8px 12px;border-radius:6px;border:none;background:#0b6efd;color:#fff;cursor:pointer}
+    .muted{color:#666}
   </style>
 </head>
-<body>
-  <h1>لوحة تحكم التحويلات</h1>
-  <div class="controls">
-    <input id="pw" class="pw" type="password" placeholder="ادخل كلمة سر الادمن">
-    <button id="load" class="btn">تحميل التحويلات</button>
+<body dir="rtl">
+  <div class="wrap">
+    <h2>لوحة تحكم التحويلات</h2>
+    <div style="margin-bottom:12px">
+      <label>ادخل Admin Token: </label>
+      <input id="adminToken" placeholder="ADMIN_TOKEN" style="width:300px" />
+      <button class="btn" id="loadBtn">تحميل التحويلات</button>
+    </div>
+
+    <div id="content" class="muted">لم يتم تحميل أي شيء بعد.</div>
   </div>
 
-  <div id="tableWrap"></div>
-
 <script>
-document.getElementById('load').addEventListener('click', async () => {
-  const pw = document.getElementById('pw').value;
-  if (!pw) return alert('ادخل كلمة السر');
-  try {
-    const res = await fetch('/api/transfers?pw=' + encodeURIComponent(pw));
-    const body = await res.json();
-    if (!body.ok) return alert('خطأ: ' + (body.message || 'unauthorized'));
-    const transfers = body.transfers || [];
-    if (!transfers.length) {
-      document.getElementById('tableWrap').innerHTML = '<p>لا توجد تحويلات حتى الآن.</p>';
-      return;
+  const loadBtn = document.getElementById('loadBtn');
+  const adminTokenInput = document.getElementById('adminToken');
+  const content = document.getElementById('content');
+
+  loadBtn.addEventListener('click', async () => {
+    const token = adminTokenInput.value.trim();
+    if (!token) return alert('أدخل الـ ADMIN_TOKEN أولًا');
+    content.textContent = 'جارٍ التحميل...';
+    try {
+      const resp = await fetch('/transfers?admin_token=' + encodeURIComponent(token));
+      const data = await resp.json();
+      if (!data.ok) {
+        content.textContent = 'خطأ: ' + (data.message || 'unauthorized');
+        return;
+      }
+      const transfers = data.transfers || [];
+      if (transfers.length === 0) {
+        content.innerHTML = '<div>لا توجد تحويلات بعد.</div>';
+        return;
+      }
+
+      let html = '<table><thead><tr><th>#</th><th>المبلغ</th><th>المرسل</th><th>ملاحظة</th><th>الوقت</th></tr></thead><tbody>';
+      transfers.forEach(t => {
+        html += `<tr><td>${t.id}</td><td>${t.amount}</td><td>${escapeHtml(t.payerName)}</td><td>${escapeHtml(t.note)}</td><td>${t.timestamp}</td></tr>`;
+      });
+      html += '</tbody></table>';
+      content.innerHTML = html;
+    } catch (err) {
+      content.textContent = 'فشل الاتصال بالخادم.';
     }
-    let html = '<table><thead><tr><th>الوقت</th><th>الاسم</th><th>المبلغ</th><th>ملاحظة</th></tr></thead><tbody>';
-    transfers.slice().reverse().forEach(t => {
-      html += `<tr><td>${t.timestamp}</td><td>${t.name}</td><td>${t.amount}</td><td>${t.note || '-'}</td></tr>`;
-    });
-    html += '</tbody></table>';
-    document.getElementById('tableWrap').innerHTML = html;
-  } catch (err) {
-    alert('فشل تحميل التحويلات');
-    console.error(err);
+  });
+
+  function escapeHtml(s) {
+    if (!s) return '';
+    return String(s).replace(/[&<>"']/g, function(m){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]; });
   }
-});
 </script>
 </body>
 </html>
