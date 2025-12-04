@@ -5,80 +5,320 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Merry Christmas 🎁 🎄</title>
   <style>
-    body { font-family: "Arial", sans-serif; background:#0f172a; color:#fff; margin:0; padding:0; display:flex; flex-direction:column; align-items:center; }
-    header { margin-top:40px; text-align:center; }
-    h1 { font-size:2.2rem; margin:0; }
-    #enterBtn { margin-top:12px; padding:10px 18px; border-radius:12px; border:none; cursor:pointer; background:#10b981; color:#fff; font-weight:bold; }
-    .container { width:100%; max-width:900px; margin:30px auto; display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); padding:0 12px; }
-    .card { background: linear-gradient(135deg,#111827 0%, #0b1220 100%); border-radius:12px; padding:18px; box-shadow:0 6px 18px rgba(0,0,0,0.5); text-align:center; }
-    .amount { font-size:1.6rem; margin-bottom:10px; }
-    .btn { display:inline-block; padding:8px 12px; border-radius:8px; cursor:pointer; border:none; background:#ef4444; color:#fff; font-weight:600; }
-    footer { margin:40px 0 80px 0; opacity:0.8; }
+    :root{
+      --bg:#071023;
+      --card:#0b1220;
+      --accent:#16a34a;
+      --accent2:#ef4444;
+      --glass: rgba(255,255,255,0.04);
+      --text:#f8fafc;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family: "Segoe UI", Tahoma, Arial, "Noto Naskh Arabic", sans-serif;
+      background:
+        radial-gradient(1200px 600px at 10% 10%, rgba(255,255,255,0.03), transparent 8%),
+        radial-gradient(900px 400px at 90% 90%, rgba(255,255,255,0.02), transparent 8%),
+        var(--bg);
+      color:var(--text);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      padding:28px 12px 60px;
+      direction:rtl;
+    }
+
+    header{ text-align:center; margin-top:6px; }
+    h1{ font-size:2.2rem; margin:0; letter-spacing:1px; }
+    p.lead{ margin:8px 0 18px; opacity:0.9; }
+
+    /* grid of boxes */
+    .grid{
+      width:100%;
+      max-width:980px;
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:18px;
+      margin-top:18px;
+    }
+
+    .box{
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:16px;
+      padding:22px;
+      min-height:140px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      align-items:center;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.03);
+      cursor:pointer;
+      transition: transform .22s ease, box-shadow .22s ease;
+      position:relative;
+      overflow:hidden;
+    }
+    .box:hover{ transform: translateY(-6px) scale(1.01); box-shadow: 0 18px 40px rgba(2,6,23,0.7); }
+
+    .gift-title{
+      font-size:1.05rem;
+      color: #f8fafc;
+      opacity:0.95;
+      margin-bottom:6px;
+      text-align:center;
+    }
+    .gift-amount{
+      font-size:1.8rem;
+      font-weight:700;
+      margin:4px 0;
+    }
+    .gift-sub{ font-size:0.92rem; opacity:0.85; margin-bottom:10px; }
+
+    .box .icon{
+      position:absolute;
+      left:12px;
+      top:12px;
+      font-size:20px;
+      opacity:0.12;
+    }
+
+    .open-btn{
+      margin-top:8px;
+      padding:10px 14px;
+      border-radius:10px;
+      border:none;
+      background:linear-gradient(90deg,var(--accent), #059669);
+      color:white;
+      font-weight:700;
+      cursor:pointer;
+      box-shadow: 0 6px 14px rgba(2,6,23,0.5);
+    }
+
+    /* modal */
+    .modal-backdrop{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      background:rgba(2,6,23,0.6);
+      z-index:1200;
+      padding:18px;
+    }
+    .modal{
+      width:100%;
+      max-width:520px;
+      background:linear-gradient(180deg, #081028, #06101f);
+      border-radius:14px;
+      padding:18px;
+      box-shadow:0 20px 50px rgba(2,6,23,0.8);
+      border:1px solid rgba(255,255,255,0.04);
+      color:var(--text);
+    }
+    .modal h2{ margin:0 0 8px; font-size:1.2rem; }
+    .modal p{ margin:0 0 12px; opacity:0.9; }
+    .field{ display:flex; flex-direction:column; gap:6px; margin-bottom:12px; }
+    input[type="text"], textarea{
+      padding:10px 12px;
+      border-radius:8px;
+      border:1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.02);
+      color:var(--text);
+      outline:none;
+      font-size:1rem;
+    }
+    textarea{ min-height:80px; resize:vertical; }
+    .row{ display:flex; gap:10px; justify-content:flex-end; align-items:center; }
+    .btn-ghost{
+      padding:8px 12px; border-radius:10px; background:transparent; border:1px solid rgba(255,255,255,0.06); color:var(--text); cursor:pointer;
+    }
+    .btn-primary{
+      padding:8px 12px; border-radius:10px; border:none; background:linear-gradient(90deg,var(--accent2), #dc2626); color:white; cursor:pointer; font-weight:700;
+    }
+
+    footer{ margin-top:34px; opacity:0.9; text-align:center; font-size:0.95rem; }
+
+    @media (max-width:420px){
+      .gift-amount{ font-size:1.5rem; }
+    }
   </style>
 </head>
-<body dir="rtl">
+<body>
   <header>
     <h1>Merry Christmas 🎁 🎄</h1>
-    <div style="margin-top:8px;">هديتي لعيلتي — اختَر المبلغ وحوّله</div>
-    <button id="enterBtn">ادخل الموقع</button>
+    <p class="lead">هدية بسيطة لعيال البيت — اضغط على أي صندوق عشان تختار الهدية</p>
   </header>
 
-  <main id="mainContent" style="display:none; width:100%;">
-    <div class="container">
-      <div class="card">
-        <div class="amount">احولك ١٠٠</div>
-        <button class="btn" data-amount="100">حوّل ١٠٠</button>
+  <main class="grid" id="boxes">
+    <!-- الصناديق -->
+    <div class="box" data-amount="100" data-label="احولك ١٠٠">
+      <div class="icon">🎁</div>
+      <div>
+        <div class="gift-title">هدية رمزية</div>
+        <div class="gift-amount">احولك ١٠٠</div>
+        <div class="gift-sub">تقدر تبعتها كهدية لعيلتك</div>
       </div>
-      <div class="card">
-        <div class="amount">تحولي ١٠٠</div>
-        <button class="btn" data-amount="100">حوّل ١٠٠</button>
+      <button class="open-btn">اختار</button>
+    </div>
+
+    <div class="box" data-amount="100" data-label="تحولي ١٠٠">
+      <div class="icon">🎄</div>
+      <div>
+        <div class="gift-title">هدية لطيفة</div>
+        <div class="gift-amount">تحولي ١٠٠</div>
+        <div class="gift-sub">لمن تحبّيه/تحبيه</div>
       </div>
-      <div class="card">
-        <div class="amount">احولك ٢٠٠</div>
-        <button class="btn" data-amount="200">حوّل ٢٠٠</button>
+      <button class="open-btn">اختار</button>
+    </div>
+
+    <div class="box" data-amount="200" data-label="احولك ٢٠٠">
+      <div class="icon">🎉</div>
+      <div>
+        <div class="gift-title">هدية مميزة</div>
+        <div class="gift-amount">احولك ٢٠٠</div>
+        <div class="gift-sub">خليها مفاجأة حلوة</div>
       </div>
-      <div class="card">
-        <div class="amount">تحولي ٢٠٠</div>
-        <button class="btn" data-amount="200">حوّل ٢٠٠</button>
+      <button class="open-btn">اختار</button>
+    </div>
+
+    <div class="box" data-amount="200" data-label="تحولي ٢٠٠">
+      <div class="icon">✨</div>
+      <div>
+        <div class="gift-title">هدية كبيرة</div>
+        <div class="gift-amount">تحولي ٢٠٠</div>
+        <div class="gift-sub">حب واحتفال</div>
       </div>
+      <button class="open-btn">اختار</button>
     </div>
   </main>
 
-  <footer style="text-align:center;">
-    <small>كل التحويلات هتوصل الادمن على تيليجرام</small>
-  </footer>
+  <footer>كل اختيار هيوصل الأدمن على تيليجرام عشان تقدر تفاجئهم 🎁</footer>
+
+  <!-- Modal -->
+  <div class="modal-backdrop" id="modal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <h2 id="modalTitle">تأكيد الهدية</h2>
+      <p id="modalLabel">انت هتبعت: —</p>
+
+      <div class="field">
+        <label>اسم المرسل (ضروري)</label>
+        <input id="senderName" type="text" placeholder="اكتب اسمك هنا">
+      </div>
+
+      <div class="field">
+        <label>ملاحظة (اختياري)</label>
+        <textarea id="note" placeholder="ملاحظة صغيرة..."></textarea>
+      </div>
+
+      <div class="row">
+        <button class="btn-ghost" id="cancelBtn">إلغاء</button>
+        <button class="btn-primary" id="sendBtn">أرسل الهدية</button>
+      </div>
+      <div id="status" style="margin-top:10px; font-size:0.95rem; opacity:0.9;"></div>
+    </div>
+  </div>
 
 <script>
-document.getElementById('enterBtn').addEventListener('click', () => {
-  document.getElementById('enterBtn').style.display = 'none';
-  document.getElementById('mainContent').style.display = 'block';
-});
+(function(){
+  const modal = document.getElementById('modal');
+  const modalLabel = document.getElementById('modalLabel');
+  const senderName = document.getElementById('senderName');
+  const note = document.getElementById('note');
+  const sendBtn = document.getElementById('sendBtn');
+  const cancelBtn = document.getElementById('cancelBtn');
+  const status = document.getElementById('status');
 
-// كل الازرار تبعت POST للسيرفر
-document.querySelectorAll('.btn').forEach(btn => {
-  btn.addEventListener('click', async (e) => {
-    const amount = e.currentTarget.dataset.amount;
-    const name = prompt('اكتب اسمك علشان الادمن يعرف مين بعت الهدية:');
-    if (!name) return alert('مطلوب اسم للتحويل');
-    const note = prompt('ملاحظة (اختياري):') || '';
+  let current = { amount: null, label: '' };
+
+  function openModal(amount, label){
+    current.amount = amount;
+    current.label = label;
+    modalLabel.textContent = `انت هتبعت: ${label}`;
+    senderName.value = '';
+    note.value = '';
+    status.textContent = '';
+    modal.style.display = 'flex';
+    senderName.focus();
+  }
+  function closeModal(){
+    modal.style.display = 'none';
+  }
+
+  // attach click listeners to boxes and buttons
+  document.querySelectorAll('.box').forEach(box => {
+    box.addEventListener('click', (e) => {
+      // prevent double open when clicking the inner button triggering the same event — handle by checking target
+      const amount = box.getAttribute('data-amount');
+      const label = box.getAttribute('data-label') || box.querySelector('.gift-amount')?.textContent || amount;
+      openModal(amount, label);
+    });
+
+    // also allow the inner button specifically
+    const btn = box.querySelector('.open-btn');
+    if (btn) btn.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      const amount = box.getAttribute('data-amount');
+      const label = box.getAttribute('data-label') || box.querySelector('.gift-amount')?.textContent || amount;
+      openModal(amount, label);
+    });
+  });
+
+  cancelBtn.addEventListener('click', closeModal);
+
+  sendBtn.addEventListener('click', async () => {
+    const name = senderName.value.trim();
+    if (!name){
+      status.textContent = 'مطلوب اسم المرسل.';
+      return senderName.focus();
+    }
+    const payload = {
+      name,
+      amount: current.amount,
+      note: note.value.trim()
+    };
+    sendBtn.disabled = true;
+    sendBtn.textContent = 'جاري الإرسال...';
+    status.textContent = '';
     try {
       const res = await fetch('/transfer', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, amount, note })
+        body: JSON.stringify(payload)
       });
-      const body = await res.json();
-      if (body.ok) {
-        alert('تم ارسال التحويل. شكراً! 🎁');
+      const json = await res.json();
+      if (json.ok){
+        status.textContent = 'تم الإرسال! هتجيك إشعار دلوقتي 🎉';
+        sendBtn.textContent = 'تم';
+        setTimeout(() => {
+          closeModal();
+          sendBtn.disabled = false;
+          sendBtn.textContent = 'أرسل الهدية';
+        }, 900);
       } else {
-        alert('حصل خطأ: ' + (body.message || 'غير معروف'));
+        status.textContent = 'حصل خطأ: ' + (json.message || 'غير معروف');
+        sendBtn.disabled = false;
+        sendBtn.textContent = 'أرسل الهدية';
       }
-    } catch (err) {
-      alert('فشل الاتصال بالسيرفر');
+    } catch (err){
       console.error(err);
+      status.textContent = 'فشل الاتصال بالسيرفر.';
+      sendBtn.disabled = false;
+      sendBtn.textContent = 'أرسل الهدية';
     }
   });
-});
+
+  // close modal when clicking backdrop (but not when clicking modal)
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+
+  // keyboard: Esc to close
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.style.display === 'flex') closeModal();
+  });
+})();
 </script>
 </body>
 </html>
