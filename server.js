@@ -43,7 +43,7 @@ app.post('/transfer', async (req, res) => {
     if (BOT_TOKEN && ADMIN_CHAT_ID) {
       const text = `🎁 *تحويل جديد*\n\n` +
              `المرسل: ${escapeMarkdown(payerName)}\n` +
-             `المبلغ: ${escapeMarkdown(amount)}\n` +
+             `المبلغ: ${escapeMarkdownV2(amount)}\n` +
              (note ? `ملاحظة: ${escapeMarkdown(note)}\n` : '') +
              `الوقت: ${timestamp}\n\n` +
              `— Merry Christmas`;
