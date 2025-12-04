@@ -42,11 +42,11 @@ app.post('/transfer', async (req, res) => {
     // prepare telegram message
     if (BOT_TOKEN && ADMIN_CHAT_ID) {
       const text = `🎁 *تحويل جديد*\n\n` +
-                   `المرسل: ${escapeMarkdown(payerName)}\n` +
-                   `المبلغ: ${escapeMarkdown(String(amount))}\n` +
-                   (note ? `ملاحظة: ${escapeMarkdown(note)}\n` : '') +
-                   `الوقت: ${timestamp}\n\n` +
-                   `— Merry Christmas`;
+             `المرسل: ${escapeMarkdown(payerName)}\n` +
+             `المبلغ: ${escapeMarkdown(amount)}\n` +
+             (note ? `ملاحظة: ${escapeMarkdown(note)}\n` : '') +
+             `الوقت: ${timestamp}\n\n` +
+             `— Merry Christmas`;
       const tgUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
       // send as MarkdownV2 safe-ish (we escape basic chars above)
       try {
