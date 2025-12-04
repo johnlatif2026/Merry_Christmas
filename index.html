@@ -5,320 +5,174 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Merry Christmas 🎁 🎄</title>
   <style>
-    :root{
-      --bg:#071023;
-      --card:#0b1220;
-      --accent:#16a34a;
-      --accent2:#ef4444;
-      --glass: rgba(255,255,255,0.04);
-      --text:#f8fafc;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      min-height:100vh;
-      font-family: "Segoe UI", Tahoma, Arial, "Noto Naskh Arabic", sans-serif;
-      background:
-        radial-gradient(1200px 600px at 10% 10%, rgba(255,255,255,0.03), transparent 8%),
-        radial-gradient(900px 400px at 90% 90%, rgba(255,255,255,0.02), transparent 8%),
-        var(--bg);
-      color:var(--text);
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      padding:28px 12px 60px;
-      direction:rtl;
-    }
-
-    header{ text-align:center; margin-top:6px; }
-    h1{ font-size:2.2rem; margin:0; letter-spacing:1px; }
-    p.lead{ margin:8px 0 18px; opacity:0.9; }
-
-    /* grid of boxes */
-    .grid{
-      width:100%;
-      max-width:980px;
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-      gap:18px;
-      margin-top:18px;
-    }
-
-    .box{
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border-radius:16px;
-      padding:22px;
-      min-height:140px;
-      display:flex;
-      flex-direction:column;
-      justify-content:space-between;
-      align-items:center;
-      box-shadow: 0 10px 30px rgba(2,6,23,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
-      border: 1px solid rgba(255,255,255,0.03);
-      cursor:pointer;
-      transition: transform .22s ease, box-shadow .22s ease;
-      position:relative;
-      overflow:hidden;
-    }
-    .box:hover{ transform: translateY(-6px) scale(1.01); box-shadow: 0 18px 40px rgba(2,6,23,0.7); }
-
-    .gift-title{
-      font-size:1.05rem;
-      color: #f8fafc;
-      opacity:0.95;
-      margin-bottom:6px;
-      text-align:center;
-    }
-    .gift-amount{
-      font-size:1.8rem;
-      font-weight:700;
-      margin:4px 0;
-    }
-    .gift-sub{ font-size:0.92rem; opacity:0.85; margin-bottom:10px; }
-
-    .box .icon{
-      position:absolute;
-      left:12px;
-      top:12px;
-      font-size:20px;
-      opacity:0.12;
-    }
-
-    .open-btn{
-      margin-top:8px;
-      padding:10px 14px;
-      border-radius:10px;
-      border:none;
-      background:linear-gradient(90deg,var(--accent), #059669);
-      color:white;
-      font-weight:700;
-      cursor:pointer;
-      box-shadow: 0 6px 14px rgba(2,6,23,0.5);
-    }
-
+    :root{--bg:#f7f7fb;--card:#fff;--accent:#0b6efd}
+    *{box-sizing:border-box;font-family:Arial, "Noto Sans Arabic", sans-serif}
+    body{margin:0;background:linear-gradient(180deg,#fff 0%,#f0f7ff 100%);color:#111}
+    .center{display:flex;align-items:center;justify-content:center}
+    header{padding:16px;text-align:center}
+    .site-title{font-size:28px;margin-bottom:8px}
+    .subtitle{color:#555}
+    .container{max-width:900px;margin:20px auto;padding:16px}
+    .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:18px}
+    .card{background:var(--card);padding:22px;border-radius:12px;box-shadow:0 6px 18px rgba(12,20,40,.06);cursor:pointer;transition:transform .14s}
+    .card:hover{transform:translateY(-6px)}
+    .amount{font-size:28px;font-weight:700;margin-bottom:6px}
+    .note{color:#666}
+    /* overlay intro */
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:40}
+    .intro{background:#fff;padding:28px;border-radius:12px;max-width:420px;width:90%;text-align:center}
+    .intro input{width:100%;padding:10px;margin-top:12px;border-radius:8px;border:1px solid #ddd}
+    .btn{display:inline-block;padding:10px 16px;border-radius:8px;border:none;background:var(--accent);color:#fff;margin-top:12px;cursor:pointer}
     /* modal */
-    .modal-backdrop{
-      position:fixed;
-      inset:0;
-      display:none;
-      align-items:center;
-      justify-content:center;
-      background:rgba(2,6,23,0.6);
-      z-index:1200;
-      padding:18px;
-    }
-    .modal{
-      width:100%;
-      max-width:520px;
-      background:linear-gradient(180deg, #081028, #06101f);
-      border-radius:14px;
-      padding:18px;
-      box-shadow:0 20px 50px rgba(2,6,23,0.8);
-      border:1px solid rgba(255,255,255,0.04);
-      color:var(--text);
-    }
-    .modal h2{ margin:0 0 8px; font-size:1.2rem; }
-    .modal p{ margin:0 0 12px; opacity:0.9; }
-    .field{ display:flex; flex-direction:column; gap:6px; margin-bottom:12px; }
-    input[type="text"], textarea{
-      padding:10px 12px;
-      border-radius:8px;
-      border:1px solid rgba(255,255,255,0.06);
-      background: rgba(255,255,255,0.02);
-      color:var(--text);
-      outline:none;
-      font-size:1rem;
-    }
-    textarea{ min-height:80px; resize:vertical; }
-    .row{ display:flex; gap:10px; justify-content:flex-end; align-items:center; }
-    .btn-ghost{
-      padding:8px 12px; border-radius:10px; background:transparent; border:1px solid rgba(255,255,255,0.06); color:var(--text); cursor:pointer;
-    }
-    .btn-primary{
-      padding:8px 12px; border-radius:10px; border:none; background:linear-gradient(90deg,var(--accent2), #dc2626); color:white; cursor:pointer; font-weight:700;
-    }
-
-    footer{ margin-top:34px; opacity:0.9; text-align:center; font-size:0.95rem; }
-
-    @media (max-width:420px){
-      .gift-amount{ font-size:1.5rem; }
-    }
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.4);z-index:50}
+    .modal.show{display:flex}
+    .modal .box{background:#fff;padding:20px;border-radius:12px;max-width:420px;width:90%}
+    .row{display:flex;gap:8px;align-items:center}
+    .success{color:green;margin-top:10px}
+    footer{padding:24px;text-align:center;color:#666}
   </style>
 </head>
-<body>
+<body dir="rtl">
   <header>
-    <h1>Merry Christmas 🎁 🎄</h1>
-    <p class="lead">هدية بسيطة لعيال البيت — اضغط على أي صندوق عشان تختار الهدية</p>
+    <div class="site-title">Merry Christmas 🎁 🎄</div>
+    <div class="subtitle">اهدي هدية لاهلك — اختر مبلغ وحول</div>
   </header>
 
-  <main class="grid" id="boxes">
-    <!-- الصناديق -->
-    <div class="box" data-amount="100" data-label="احولك ١٠٠">
-      <div class="icon">🎁</div>
-      <div>
-        <div class="gift-title">هدية رمزية</div>
-        <div class="gift-amount">احولك ١٠٠</div>
-        <div class="gift-sub">تقدر تبعتها كهدية لعيلتك</div>
+  <div class="container">
+    <div style="margin-bottom:12px">مرحبا <span id="visitorNameDisplay" style="font-weight:700">ضيف</span> — اختار قيمة التحويل</div>
+
+    <div class="cards" id="cards">
+      <div class="card" data-amount="100">
+        <div class="amount">تحويل 100</div>
+        <div class="note">عيد الميلاد سعيد!</div>
       </div>
-      <button class="open-btn">اختار</button>
-    </div>
-
-    <div class="box" data-amount="100" data-label="تحولي ١٠٠">
-      <div class="icon">🎄</div>
-      <div>
-        <div class="gift-title">هدية لطيفة</div>
-        <div class="gift-amount">تحولي ١٠٠</div>
-        <div class="gift-sub">لمن تحبّيه/تحبيه</div>
+      <div class="card" data-amount="100">
+        <div class="amount">تحولي 100</div>
+        <div class="note">هدية بسيطة</div>
       </div>
-      <button class="open-btn">اختار</button>
-    </div>
-
-    <div class="box" data-amount="200" data-label="احولك ٢٠٠">
-      <div class="icon">🎉</div>
-      <div>
-        <div class="gift-title">هدية مميزة</div>
-        <div class="gift-amount">احولك ٢٠٠</div>
-        <div class="gift-sub">خليها مفاجأة حلوة</div>
+      <div class="card" data-amount="200">
+        <div class="amount">تحويل 200</div>
+        <div class="note">فرحة أكبر</div>
       </div>
-      <button class="open-btn">اختار</button>
-    </div>
-
-    <div class="box" data-amount="200" data-label="تحولي ٢٠٠">
-      <div class="icon">✨</div>
-      <div>
-        <div class="gift-title">هدية كبيرة</div>
-        <div class="gift-amount">تحولي ٢٠٠</div>
-        <div class="gift-sub">حب واحتفال</div>
+      <div class="card" data-amount="200">
+        <div class="amount">تحولي 200</div>
+        <div class="note">مفاجأة!</div>
       </div>
-      <button class="open-btn">اختار</button>
-    </div>
-  </main>
-
-  <footer>كل اختيار هيوصل الأدمن على تيليجرام عشان تقدر تفاجئهم 🎁</footer>
-
-  <!-- Modal -->
-  <div class="modal-backdrop" id="modal">
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <h2 id="modalTitle">تأكيد الهدية</h2>
-      <p id="modalLabel">انت هتبعت: —</p>
-
-      <div class="field">
-        <label>اسم المرسل (ضروري)</label>
-        <input id="senderName" type="text" placeholder="اكتب اسمك هنا">
-      </div>
-
-      <div class="field">
-        <label>ملاحظة (اختياري)</label>
-        <textarea id="note" placeholder="ملاحظة صغيرة..."></textarea>
-      </div>
-
-      <div class="row">
-        <button class="btn-ghost" id="cancelBtn">إلغاء</button>
-        <button class="btn-primary" id="sendBtn">أرسل الهدية</button>
-      </div>
-      <div id="status" style="margin-top:10px; font-size:0.95rem; opacity:0.9;"></div>
     </div>
   </div>
 
+  <div class="modal" id="modal">
+    <div class="box">
+      <h3 id="modalTitle">تأكيد التحويل</h3>
+      <div style="margin-top:8px">
+        <div>المبلغ: <strong id="modalAmount"></strong></div>
+        <div style="margin-top:10px">
+          <label>اسم المرسل (سيظهر للأدمن):</label>
+          <input id="payerName" placeholder="اكتب اسمك هنا" style="width:100%;padding:8px;margin-top:6px;border-radius:6px;border:1px solid #ddd" />
+        </div>
+        <div style="margin-top:10px">
+          <label>ملاحظة (اختياري):</label>
+          <input id="note" placeholder="ملاحظة قصيرة" style="width:100%;padding:8px;margin-top:6px;border-radius:6px;border:1px solid #ddd" />
+        </div>
+        <div style="margin-top:14px" class="row">
+          <button class="btn" id="confirmBtn">تأكيد وإرسال</button>
+          <button class="btn" id="cancelBtn" style="background:#ccc;color:#111">إلغاء</button>
+        </div>
+        <div id="modalMsg" style="margin-top:8px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- intro overlay to ask name first -->
+  <div class="overlay" id="overlay">
+    <div class="intro">
+      <h2>أدخل اسمك قبل الدخول</h2>
+      <input id="visitorName" placeholder="اسمك" />
+      <div style="margin-top:10px">
+        <button class="btn" id="enterBtn">ادخل الموقع</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    &copy; Merry Christmas — هدية لعائلتي
+  </footer>
+
 <script>
-(function(){
-  const modal = document.getElementById('modal');
-  const modalLabel = document.getElementById('modalLabel');
-  const senderName = document.getElementById('senderName');
-  const note = document.getElementById('note');
-  const sendBtn = document.getElementById('sendBtn');
-  const cancelBtn = document.getElementById('cancelBtn');
-  const status = document.getElementById('status');
+  // init
+  const overlay = document.getElementById('overlay');
+  const enterBtn = document.getElementById('enterBtn');
+  const visitorNameInput = document.getElementById('visitorName');
+  const visitorNameDisplay = document.getElementById('visitorNameDisplay');
 
-  let current = { amount: null, label: '' };
+  enterBtn.addEventListener('click', () => {
+    const name = (visitorNameInput.value || 'ضيف').trim();
+    visitorNameDisplay.textContent = name;
+    overlay.style.display = 'none';
+    localStorage.setItem('visitorName', name);
+  });
 
-  function openModal(amount, label){
-    current.amount = amount;
-    current.label = label;
-    modalLabel.textContent = `انت هتبعت: ${label}`;
-    senderName.value = '';
-    note.value = '';
-    status.textContent = '';
-    modal.style.display = 'flex';
-    senderName.focus();
-  }
-  function closeModal(){
-    modal.style.display = 'none';
+  // restore if present
+  const savedName = localStorage.getItem('visitorName');
+  if (savedName) {
+    visitorNameDisplay.textContent = savedName;
+    overlay.style.display = 'none';
   }
 
-  // attach click listeners to boxes and buttons
-  document.querySelectorAll('.box').forEach(box => {
-    box.addEventListener('click', (e) => {
-      // prevent double open when clicking the inner button triggering the same event — handle by checking target
-      const amount = box.getAttribute('data-amount');
-      const label = box.getAttribute('data-label') || box.querySelector('.gift-amount')?.textContent || amount;
-      openModal(amount, label);
-    });
-
-    // also allow the inner button specifically
-    const btn = box.querySelector('.open-btn');
-    if (btn) btn.addEventListener('click', (ev) => {
-      ev.stopPropagation();
-      const amount = box.getAttribute('data-amount');
-      const label = box.getAttribute('data-label') || box.querySelector('.gift-amount')?.textContent || amount;
-      openModal(amount, label);
+  // cards
+  document.querySelectorAll('.card').forEach(card => {
+    card.addEventListener('click', () => {
+      const amount = card.getAttribute('data-amount');
+      openModal(amount);
     });
   });
 
-  cancelBtn.addEventListener('click', closeModal);
+  const modal = document.getElementById('modal');
+  const modalAmount = document.getElementById('modalAmount');
+  const payerNameInput = document.getElementById('payerName');
+  const noteInput = document.getElementById('note');
+  const confirmBtn = document.getElementById('confirmBtn');
+  const cancelBtn = document.getElementById('cancelBtn');
+  const modalMsg = document.getElementById('modalMsg');
 
-  sendBtn.addEventListener('click', async () => {
-    const name = senderName.value.trim();
-    if (!name){
-      status.textContent = 'مطلوب اسم المرسل.';
-      return senderName.focus();
-    }
-    const payload = {
-      name,
-      amount: current.amount,
-      note: note.value.trim()
-    };
-    sendBtn.disabled = true;
-    sendBtn.textContent = 'جاري الإرسال...';
-    status.textContent = '';
+  function openModal(amount) {
+    modal.classList.add('show');
+    modalAmount.textContent = amount;
+    payerNameInput.value = localStorage.getItem('visitorName') || '';
+    noteInput.value = '';
+    modalMsg.textContent = '';
+  }
+  cancelBtn.addEventListener('click', () => modal.classList.remove('show'));
+
+  confirmBtn.addEventListener('click', async () => {
+    const amount = modalAmount.textContent;
+    const payerName = payerNameInput.value.trim() || 'ضيف';
+    const note = noteInput.value.trim();
+
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = 'جاري الإرسال...';
+
     try {
-      const res = await fetch('/transfer', {
+      const resp = await fetch('/transfer', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({ payerName, amount, note })
       });
-      const json = await res.json();
-      if (json.ok){
-        status.textContent = 'تم الإرسال! هتجيك إشعار دلوقتي 🎉';
-        sendBtn.textContent = 'تم';
-        setTimeout(() => {
-          closeModal();
-          sendBtn.disabled = false;
-          sendBtn.textContent = 'أرسل الهدية';
-        }, 900);
+      const data = await resp.json();
+      if (data.ok) {
+        modalMsg.innerHTML = '<span class="success">تم الإرسال بنجاح! شكراً لك 🎄</span>';
+        // keep record
+        localStorage.setItem('visitorName', payerName);
       } else {
-        status.textContent = 'حصل خطأ: ' + (json.message || 'غير معروف');
-        sendBtn.disabled = false;
-        sendBtn.textContent = 'أرسل الهدية';
+        modalMsg.textContent = 'حدث خطأ: ' + (data.message || 'unknown');
       }
-    } catch (err){
-      console.error(err);
-      status.textContent = 'فشل الاتصال بالسيرفر.';
-      sendBtn.disabled = false;
-      sendBtn.textContent = 'أرسل الهدية';
+    } catch (err) {
+      modalMsg.textContent = 'فشل الإتصال بالخادم.';
+    } finally {
+      confirmBtn.disabled = false;
+      confirmBtn.textContent = 'تأكيد وإرسال';
     }
   });
-
-  // close modal when clicking backdrop (but not when clicking modal)
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) closeModal();
-  });
-
-  // keyboard: Esc to close
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && modal.style.display === 'flex') closeModal();
-  });
-})();
 </script>
 </body>
 </html>
