@@ -19,13 +19,11 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '/'))); // serve index.html, dashboard.html
 
-// store transfers in memory (demo). To persist use a DB or file.
 const transfers = [];
 
 /**
  * POST /transfer
  * body: { payerName, amount, note }
- * Action: record transfer, send Telegram message to admin, return success/failure
  */
 app.post('/transfer', async (req, res) => {
   try {
@@ -37,18 +35,18 @@ app.post('/transfer', async (req, res) => {
     const timestamp = new Date().toISOString();
     const id = transfers.length + 1;
     const item = { id, payerName, amount, note: note || '', timestamp };
-    transfers.unshift(item); // latest first
+    transfers.unshift(item);
 
-    // prepare telegram message
+    // إرسال رسالة للأدمن على تيليجرام
     if (BOT_TOKEN && ADMIN_CHAT_ID) {
       const text = `🎁 *تحويل جديد*\n\n` +
-             `المرسل: ${escapeMarkdown(payerName)}\n` +
-             `المبلغ: ${escapeMarkdown(amount)}\n` +
-             (note ? `ملاحظة: ${escapeMarkdown(note)}\n` : '') +
-             `الوقت: ${timestamp}\n\n` +
-             `— Merry Christmas`;
+                   `المرسل: ${payerName}\n` +
+                   `المبلغ: ${amount}\n` +
+                   (note ? `ملاحظة: ${note}\n` : '') +
+                   `الوقت: ${timestamp}\n\n` +
+                   `— Merry Christmas`;
       const tgUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
-      // send as MarkdownV2 safe-ish (we escape basic chars above)
+
       try {
         await fetch(tgUrl, {
           method: 'POST',
@@ -56,7 +54,7 @@ app.post('/transfer', async (req, res) => {
           body: JSON.stringify({
             chat_id: ADMIN_CHAT_ID,
             text,
-            parse_mode: 'Markdown'
+            parse_mode: 'Markdown' // استخدم Markdown العادية لتجنب \ في الأرقام
           })
         });
       } catch (err) {
@@ -73,7 +71,7 @@ app.post('/transfer', async (req, res) => {
 
 /**
  * GET /transfers
- * protected by ADMIN_TOKEN either query param ?admin_token=... or header x-admin-token
+ * محمي بواسطة ADMIN_TOKEN
  */
 app.get('/transfers', (req, res) => {
   const provided = (req.query.admin_token || req.get('x-admin-token') || '');
@@ -83,15 +81,8 @@ app.get('/transfers', (req, res) => {
   return res.json({ ok: true, transfers });
 });
 
-// helper to escape markdown (basic)
-function escapeMarkdown(text) {
-  if (!text) return '';
-  return String(text).replace(/([_*[\]()~`>#+-=|{}.!\\])/g, '\\$1');
-}
-
-// fallback for single-page serving (if using client side routes)
+// fallback للصفحات
 app.get('*', (req, res) => {
-  // serve index.html by default except for explicit files
   if (req.path.endsWith('.html') || req.path.endsWith('.js') || req.path.endsWith('.css')) {
     return res.sendFile(path.join(__dirname, req.path));
   }
