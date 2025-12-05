@@ -12,8 +12,8 @@ app.use(bodyParser.json());
 app.use(express.static('public'));
 
 // Telegram Bot Token و Chat ID - ضع معلوماتك هنا
-const TELEGRAM_BOT_TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN';
-const TELEGRAM_CHAT_ID = 'YOUR_CHAT_ID';
+const TELEGRAM_BOT_TOKEN = '8591936291:AAEi6UAa5u09dZK_rEygpYSBEDpQB9dYWtM';
+const TELEGRAM_CHAT_ID = '5859857970';
 
 // مسار لاستقبال البيانات من الموقع
 app.post('/send-to-telegram', async (req, res) => {
