@@ -1,94 +1,116 @@
-require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
-const fetch = require('node-fetch');
 const cors = require('cors');
-const path = require('path');
+const axios = require('axios');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
-const ADMIN_CHAT_ID = process.env.TELEGRAM_ADMIN_CHAT_ID;
-const ADMIN_TOKEN = process.env.ADMIN_TOKEN || 'admin';
 
-if (!BOT_TOKEN || !ADMIN_CHAT_ID) {
-  console.warn('Warning: TELEGRAM_BOT_TOKEN or TELEGRAM_ADMIN_CHAT_ID not set in .env — Telegram notifications will fail.');
-}
-
+// إعدادات الميدلوير
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, '/'))); // serve index.html, dashboard.html
+app.use(express.static('public'));
 
-const transfers = [];
+// Telegram Bot Token و Chat ID - ضع معلوماتك هنا
+const TELEGRAM_BOT_TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN';
+const TELEGRAM_CHAT_ID = 'YOUR_CHAT_ID';
 
-/**
- * POST /transfer
- * body: { payerName, amount, note }
- */
-app.post('/transfer', async (req, res) => {
-  try {
-    const { payerName, amount, note } = req.body;
-    if (!payerName || !amount) {
-      return res.status(400).json({ ok: false, message: 'payerName and amount are required' });
-    }
+// مسار لاستقبال البيانات من الموقع
+app.post('/send-to-telegram', async (req, res) => {
+    try {
+        const { username, gift, boxNumber, timestamp, ip } = req.body;
+        
+        // رسالة التليجرام
+        const message = `
+🎄 *مفاجأة السنة الجديدة* 🎁
 
-    const timestamp = new Date().toISOString();
-    const id = transfers.length + 1;
-    const item = { id, payerName, amount, note: note || '', timestamp };
-    transfers.unshift(item);
+👤 *اسم المستخدم:* ${username}
+🎁 *الهدية المختارة:* ${gift}
+🔢 *رقم الصندوق:* ${boxNumber}
+⏰ *الوقت:* ${new Date(timestamp).toLocaleString('ar-EG')}
+🌐 *عنوان IP:* ${ip}
 
-    // إرسال رسالة للأدمن على تيليجرام
-    if (BOT_TOKEN && ADMIN_CHAT_ID) {
-      const text = `🎁 *تحويل جديد*\n\n` +
-                   `المرسل: ${payerName}\n` +
-                   `المبلغ: ${amount}\n` +
-                   (note ? `ملاحظة: ${note}\n` : '') +
-                   `الوقت: ${timestamp}\n\n` +
-                   `— Merry Christmas`;
-      const tgUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
-
-      try {
-        await fetch(tgUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            chat_id: ADMIN_CHAT_ID,
-            text,
-            parse_mode: 'Markdown' // استخدم Markdown العادية لتجنب \ في الأرقام
-          })
+✅ تم اختيار الهدية بنجاح!
+        `;
+        
+        // إرسال الرسالة إلى التليجرام
+        const telegramResponse = await axios.post(
+            `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
+            {
+                chat_id: TELEGRAM_CHAT_ID,
+                text: message,
+                parse_mode: 'Markdown'
+            }
+        );
+        
+        console.log('تم إرسال الرسالة إلى التليجرام');
+        
+        // حفظ البيانات في ملف (اختياري)
+        saveToFile({
+            username,
+            gift,
+            boxNumber,
+            timestamp,
+            ip,
+            telegramResponse: telegramResponse.data
         });
-      } catch (err) {
-        console.error('Telegram send error:', err.message);
-      }
+        
+        res.json({ 
+            success: true, 
+            message: 'تم إرسال البيانات إلى التليجرام بنجاح' 
+        });
+        
+    } catch (error) {
+        console.error('خطأ في إرسال البيانات:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'خطأ في إرسال البيانات' 
+        });
     }
-
-    return res.json({ ok: true, transfer: item });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ ok: false, message: 'server error' });
-  }
 });
 
-/**
- * GET /transfers
- * محمي بواسطة ADMIN_TOKEN
- */
-app.get('/transfers', (req, res) => {
-  const provided = (req.query.admin_token || req.get('x-admin-token') || '');
-  if (!ADMIN_TOKEN || provided !== ADMIN_TOKEN) {
-    return res.status(401).json({ ok: false, message: 'unauthorized' });
-  }
-  return res.json({ ok: true, transfers });
+// مسار لعرض البيانات المحفوظة (للإدارة)
+app.get('/admin/data', (req, res) => {
+    const fs = require('fs');
+    try {
+        const data = fs.readFileSync('data.json', 'utf8');
+        const jsonData = JSON.parse(data);
+        res.json(jsonData);
+    } catch (error) {
+        res.json([]);
+    }
 });
 
-// fallback للصفحات
-app.get('*', (req, res) => {
-  if (req.path.endsWith('.html') || req.path.endsWith('.js') || req.path.endsWith('.css')) {
-    return res.sendFile(path.join(__dirname, req.path));
-  }
-  res.sendFile(path.join(__dirname, 'index.html'));
+// مسار رئيسي
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
 });
 
+// دالة لحفظ البيانات في ملف
+function saveToFile(data) {
+    const fs = require('fs');
+    const path = require('path');
+    
+    const filePath = path.join(__dirname, 'data.json');
+    let existingData = [];
+    
+    try {
+        const fileData = fs.readFileSync(filePath, 'utf8');
+        existingData = JSON.parse(fileData);
+    } catch (error) {
+        // إذا الملف مش موجود، نبدأ بمصفوفة فارغة
+    }
+    
+    existingData.push({
+        ...data,
+        savedAt: new Date().toISOString()
+    });
+    
+    fs.writeFileSync(filePath, JSON.stringify(existingData, null, 2));
+}
+
+// تشغيل السيرفر
 app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+    console.log(`✅ السيرفر يعمل على http://localhost:${PORT}`);
+    console.log(`📱 أرسل البيانات إلى: http://localhost:${PORT}/send-to-telegram`);
 });
